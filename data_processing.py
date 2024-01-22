@@ -164,3 +164,12 @@ def average_drawdown_duration(daily_pnl_df):
         return average_duration
     else:
         return None
+
+
+def grouped_assets_df(df):
+    return df.groupby('Asset')['PnL'].sum().sort_values(ascending=False)
+
+
+def grouped_assets_chart(grouped_assets_pnl):
+    fig = px.bar(grouped_assets_pnl, x=grouped_assets_pnl.index, y='PnL')
+    return fig
