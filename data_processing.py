@@ -191,5 +191,45 @@ def top_pnl_day(daily_pnl_df):
 
 
 def positive_assets(df):
-    positive_assets = df[df['PnL'] > 0].groupby(
+    positive_assets_df = df[df['PnL'] > 0].groupby(
         'Asset')['PnL'].sum().sort_values(ascending=False).reset_index()
+    positive_assets_df['Asset'] = positive_assets_df['Asset'].str.upper()
+    return positive_assets_df
+
+
+def positive_assets_pie(df):
+    positive_assets_df = positive_assets(df)
+    fig = px.pie(positive_assets_df, names='Asset', values='PnL',
+                 color='Asset', color_discrete_sequence=px.colors.sequential.Blues_r)
+    st.plotly_chart(fig)
+
+
+def timedelta_to_hours_minutes(td):
+    total_seconds = td.total_seconds()
+    hours = int(total_seconds // 3600)
+    minutes = int((total_seconds % 3600) // 60)
+    return f'{hours} hours and {minutes} minutes'
+
+
+def trade_times(df):
+    df['Open Date'] = pd.to_datetime(df['Open Date'])
+    df['Close Date'] = pd.to_datetime(df['Close Date'])
+    negative_df = df[df['PnL'] < 0]
+    positive_df = df[df['PnL'] > 0]
+    time_differences_negative = negative_df['Close Date'] - \
+        negative_df['Open Date']
+    time_differences_positive = positive_df['Close Date'] - \
+        positive_df['Open Date']
+    average_time_positive = time_differences_positive.mean()
+    average_time_negative = time_differences_negative.mean()
+
+    positive_time_str = timedelta_to_hours_minutes(average_time_positive)
+    negative_time_str = timedelta_to_hours_minutes(average_time_negative)
+    max_time_negative = time_differences_negative.max()
+    max_time_negative_id = time_differences_negative.idxmax()
+    convert_max_negative = timedelta_to_hours_minutes(max_time_negative)
+    max_time_positive = time_differences_positive.max()
+    max_time_positive_id = time_differences_positive.idxmax()
+    convert_max_positive = timedelta_to_hours_minutes(max_time_positive)
+
+    return positive_time_str, negative_time_str, convert_max_negative, convert_max_positive

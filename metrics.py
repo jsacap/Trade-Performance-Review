@@ -1,4 +1,4 @@
-from data_processing import totals, drawdown_negative, find_recovery_date, duration_to_recovery, calculate_real_drawdown, average_drawdown_duration, calculate_largest_drawdown, top_pnl_day, get_top_asset, grouped_assets_df, daily_df
+from data_processing import totals, drawdown_negative, find_recovery_date, duration_to_recovery, calculate_real_drawdown, average_drawdown_duration, calculate_largest_drawdown, top_pnl_day, get_top_asset, grouped_assets_df, daily_df, trade_times
 import streamlit as st
 
 
@@ -75,3 +75,17 @@ def top_pnl_day_metrics(df):
         st.metric('Highest return in 1-Day', f'${strongest_pnl}')
     with col4:
         st.metric('Date of highest return', strongest_pnl_date_str)
+
+
+def trade_times_metrics(df):
+    positive_time_str, negative_time_str, convert_max_negative, convert_max_positive = trade_times(
+        df)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric('Avg. hold time for winning trades', positive_time_str)
+    with col2:
+        st.metric('Avg. hold time for losing trades', negative_time_str)
+    with col3:
+        st.metric('Max hold time for winning trades', convert_max_positive)
+    with col4:
+        st.metric('Max hold time for losing trades', convert_max_negative)
