@@ -1,4 +1,4 @@
-from data_processing import totals, drawdown_negative, find_recovery_date, duration_to_recovery, calculate_real_drawdown, average_drawdown_duration, calculate_largest_drawdown, top_pnl_day, get_top_asset, grouped_assets_df, daily_df, trade_times
+from data_processing import totals, drawdown_negative, find_recovery_date, duration_to_recovery, calculate_real_drawdown, average_drawdown_duration, calculate_largest_drawdown, top_pnl_day, get_top_asset, grouped_assets_df, daily_df, trade_times, predict_and_plot_rolling_pnl
 import streamlit as st
 
 
@@ -89,3 +89,16 @@ def trade_times_metrics(df):
         st.metric('Max hold time for winning trades', convert_max_positive)
     with col4:
         st.metric('Max hold time for losing trades', convert_max_negative)
+
+
+def predict_and_plot_metrics(df):
+    _, last_prediction_date, last_prediction_value = predict_and_plot_rolling_pnl(
+        df)
+    last_prediction_date_str = last_prediction_date.strftime("%d %B %Y")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric('Predicted value in 30 days',
+                  f'${last_prediction_value}')
+    with col2:
+        st.metric('Predicted value to be on', last_prediction_date_str)
