@@ -106,3 +106,61 @@ def duration_to_recovery(df):
         return duration.days
 
     return None
+
+
+def calculate_real_drawdown(daily_pnl_df):
+    new_highs = []
+    drawdowns = []
+    drawdown_dates = []
+    drawdown_durations = []
+    current_high = daily_pnl_df['Rolling PnL'].iloc[0]
+    lowest_rolling = current_high
+    date_of_lowest_rolling = daily_pnl_df['Close Date'].iloc[0]
+
+    for index, row in daily_pnl_df.iterrows():
+        if row['Rolling PnL'] > current_high:
+            current_high = row['Rolling PnL']
+            new_highs.append((row['Close Date'], current_high))
+
+            drawdown_amount = current_high - lowest_rolling
+            drawdowns.append(drawdown_amount)
+
+            start_date = date_of_lowest_rolling
+            end_date = row['Close Date']
+            drawdown_dates.append((start_date, end_date))
+
+            duration = (end_date - start_date).days
+            drawdown_durations.append(duration)
+
+            lowest_rolling = current_high
+            date_of_lowest_rolling = row['Close Date']
+        else:
+            if row['Rolling PnL'] < lowest_rolling:
+                lowest_rolling = row['Rolling PnL']
+                date_of_lowest_rolling = row['Close Date']
+
+    return new_highs, drawdowns, drawdown_dates, drawdown_durations
+
+
+def calculate_largest_drawdown(daily_pnl_df):
+    _, drawdowns, drawdown_dates, _ = calculate_real_drawdown(daily_pnl_df)
+
+    if drawdowns:
+        largest_drawdown = max(drawdowns)
+        largest_drawdown_index = drawdowns.index(largest_drawdown)
+        start_date, end_date = drawdown_dates[largest_drawdown_index]
+
+        duration = (end_date - start_date).days
+        return largest_drawdown, start_date, end_date, duration
+    else:
+        return None, None, None, None
+
+
+def average_drawdown_duration(daily_pnl_df):
+    _, _, _, drawdown_durations = calculate_real_drawdown(daily_pnl_df)
+
+    if drawdown_durations:
+        average_duration = sum(drawdown_durations) / len(drawdown_durations)
+        return average_duration
+    else:
+        return None
