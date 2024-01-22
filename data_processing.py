@@ -52,9 +52,10 @@ def line_chart(df):
                   title='Rolling PnL Over Time')
     fig.update_layout(
         xaxis_title='Date',
-        yaxis_title='$ PnL'
+        yaxis_title='$ PnL',
+        autosize=True
     )
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
 
 def totals(df):
@@ -249,7 +250,6 @@ def predict_and_plot_rolling_pnl(df, num_days_to_predict=30, degree=3):
     polyreg = make_pipeline(PolynomialFeatures(degree), LinearRegression())
     polyreg.fit(X, y)
 
-    # Start predictions from the first date in the dataset
     start_date_for_prediction = pd.to_datetime(df['Close Date']).min()
     last_date = pd.to_datetime(df['Close Date']).max()
     end_date_for_prediction = last_date + timedelta(days=num_days_to_predict)
@@ -258,21 +258,17 @@ def predict_and_plot_rolling_pnl(df, num_days_to_predict=30, degree=3):
     prediction_dates_numeric = [datetime.toordinal(
         date) for date in prediction_dates]
 
-    # Make predictions for this range
     predictions = polyreg.predict(
         np.array(prediction_dates_numeric).reshape(-1, 1))
 
-    # Create a DataFrame for the predictions
     predictions_df = pd.DataFrame(
         {'Date': prediction_dates, 'Predicted Rolling PnL': predictions})
 
-    # Plotting the original and predicted data
     fig = px.line(df, x='Close Date', y='Rolling PnL', labels={
                   'Rolling PnL': 'Original Rolling PnL'}, title='Rolling PnL and Predictions')
     fig.add_scatter(x=predictions_df['Date'], y=predictions_df['Predicted Rolling PnL'],
                     mode='lines', name='Predicted Rolling PnL', line=dict(color='orange'))
-
-    # Get the last prediction date and value for future use
+    fig.update_layout(autosize=True)
     last_prediction_date = end_date_for_prediction
     last_prediction_value = predictions[-1].round(2)
 

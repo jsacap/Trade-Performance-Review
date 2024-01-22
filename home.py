@@ -5,7 +5,7 @@ from data_processing import clean_data, line_chart, drawdown_negative, daily_df,
 from metrics import totals_metrics, drawdown_negative_metrics, real_drawdown_metrics, top_pnl_day_metrics, trade_times_metrics, predict_and_plot_metrics
 
 
-st.set_page_config(page_title='Trade Performance Stats')
+st.set_page_config(page_title='Trading Performance Review', layout='wide')
 st.title('Trading Edge Auditor')
 st.write('Upload and analyze your trade data.')
 
@@ -27,17 +27,19 @@ if file_upload:
 
         st.header('HIGHLIGHTS')
         top_pnl_day_metrics(df)
-        positive_assets_pie(df)
+        col1, col2, col3 = st.columns(3)
+        with col2:
+            positive_assets_pie(df)
         trade_times_metrics(df)
         predict_and_plot_metrics(df)
-        st.plotly_chart(predict_fig)
+        st.plotly_chart(predict_fig, use_container_width=True)
 
         st.header('Drawdown')
         st.subheader('Days below starting balance')
         drawdown_negative_metrics(df)
-        st.plotly_chart(drawdown_fig)
+        st.plotly_chart(drawdown_fig, use_container_width=True)
 
         st.subheader('Drawdowns (after reaching new equity highs)')
         real_drawdown_metrics(daily_pnl_df)
 
-        st.plotly_chart(assets_chart)
+        st.plotly_chart(assets_chart, use_container_width=True)
