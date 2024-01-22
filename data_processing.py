@@ -167,9 +167,29 @@ def average_drawdown_duration(daily_pnl_df):
 
 
 def grouped_assets_df(df):
-    return df.groupby('Asset')['PnL'].sum().sort_values(ascending=False)
+    return df.groupby('Asset')['PnL'].sum().sort_values(ascending=False).reset_index()
 
 
 def grouped_assets_chart(grouped_assets_pnl):
-    fig = px.bar(grouped_assets_pnl, x=grouped_assets_pnl.index, y='PnL')
+    fig = px.bar(grouped_assets_pnl, x='Asset', y='PnL')
     return fig
+
+
+def get_top_asset(grouped_assets_df):
+    top_asset = grouped_assets_df.iloc[0]['Asset'].upper()
+    top_asset_pnl = grouped_assets_df.iloc[0]['PnL']
+    return top_asset, top_asset_pnl
+
+
+def top_pnl_day(daily_pnl_df):
+    strongest_pnl_df = daily_pnl_df.sort_values(by='PnL', ascending=False)
+    strongest_pnl_date = strongest_pnl_df.iloc[0]['Close Date']
+    strongest_pnl_date_str = strongest_pnl_date.strftime("%d %B %Y")
+    strongest_pnl = strongest_pnl_df.iloc[0]['PnL']
+
+    return strongest_pnl_date_str, strongest_pnl
+
+
+def positive_assets(df):
+    positive_assets = df[df['PnL'] > 0].groupby(
+        'Asset')['PnL'].sum().sort_values(ascending=False).reset_index()

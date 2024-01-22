@@ -2,10 +2,10 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 from data_processing import clean_data, line_chart, drawdown_negative, daily_df, grouped_assets_chart, grouped_assets_df
-from metrics import totals_metrics, drawdown_negative_metrics, real_drawdown_metrics
+from metrics import totals_metrics, drawdown_negative_metrics, real_drawdown_metrics, top_pnl_day_metrics
 
 
-st.set_page_config(layout='wide')
+st.set_page_config(page_title='Trade Performance Stats')
 st.title('Trading Edge Auditor')
 st.write('Upload and analyze your trade data.')
 
@@ -23,6 +23,9 @@ if file_upload:
         st.dataframe(df)
         totals_metrics(df)
         line_chart(df)
+
+        st.header('Highlights')
+        top_pnl_day_metrics(df)
 
         st.header('Drawdown')
         st.subheader('Days below starting balance')

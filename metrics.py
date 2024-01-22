@@ -1,4 +1,4 @@
-from data_processing import totals, drawdown_negative, find_recovery_date, duration_to_recovery, calculate_real_drawdown, average_drawdown_duration, calculate_largest_drawdown
+from data_processing import totals, drawdown_negative, find_recovery_date, duration_to_recovery, calculate_real_drawdown, average_drawdown_duration, calculate_largest_drawdown, top_pnl_day, get_top_asset, grouped_assets_df, daily_df
 import streamlit as st
 
 
@@ -58,3 +58,20 @@ def real_drawdown_metrics(df):
     with col5:
         st.metric('Average Duration for all Drawdowns',
                   f'{average_duration} Days')
+
+
+def top_pnl_day_metrics(df):
+    daily_pnl_df = daily_df(df)
+    grouped_df = grouped_assets_df(df)
+    top_asset, top_asset_pnl = get_top_asset(grouped_df)
+    strongest_pnl_date_str, strongest_pnl = top_pnl_day(daily_pnl_df)
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric('Top Asset', top_asset)
+    with col2:
+        st.metric('Top Asset PnL', f'${top_asset_pnl}')
+    with col3:
+        st.metric('Highest return in 1-Day', f'${strongest_pnl}')
+    with col4:
+        st.metric('Date of highest return', strongest_pnl_date_str)
