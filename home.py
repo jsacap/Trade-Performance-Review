@@ -1,17 +1,25 @@
 import streamlit as st
 import plotly.express as px
 import pandas as pd
-from data_processing import clean_data, line_chart, drawdown_negative, daily_df, grouped_assets_chart, grouped_assets_df, positive_assets_pie, predict_and_plot_rolling_pnl
+import time
+from data_processing import clean_data, line_chart, drawdown_negative, daily_df, grouped_assets_chart, grouped_assets_df, positive_assets_pie, predict_and_plot_rolling_pnl, process_data
 from metrics import totals_metrics, drawdown_negative_metrics, real_drawdown_metrics, top_pnl_day_metrics, trade_times_metrics, predict_and_plot_metrics
 
 
 st.set_page_config(page_title='Trading Performance Review', layout='wide')
+
+
 st.title('Trading Edge Auditor')
 st.write('Upload and analyze your trade data.')
 
 file_upload = st.file_uploader("Upload your trade data", type=["html", "htm"])
 
 if file_upload:
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    process_data(progress_bar, status_text)
+    st.snow()
+
     df = clean_data(file_upload)
     # Globals
     lowest_pnl, date_lowest_pnl_str, drawdown_fig, _ = drawdown_negative(df)

@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -273,3 +274,13 @@ def predict_and_plot_rolling_pnl(df, num_days_to_predict=30, degree=3):
     last_prediction_value = predictions[-1].round(2)
 
     return fig, last_prediction_date, last_prediction_value
+
+
+def process_data(progress_bar, status_text):
+    total_steps = 10
+
+    for step in range(total_steps):
+        time.sleep(0.6)
+        progress_bar.progress((step + 1) / total_steps)
+        status_text.text(
+            f"Cleaning and Analysing your Trading Data ... Step {step + 1} of {total_steps}")
