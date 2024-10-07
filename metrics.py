@@ -17,9 +17,15 @@ def totals_metrics(df):
 def drawdown_negative_metrics(df):
     lowest_pnl, date_lowest_pnl_str, _, index_of_Lowest_pnl = drawdown_negative(
         df)
+    # Change 'index_of_Lowest_pnl' to 'index_of_lowest_pnl'
     recovery_date = find_recovery_date(
         df, index_of_lowest_pnl=index_of_Lowest_pnl)
-    recovery_date_str = recovery_date.strftime("%d %B %Y")
+
+    if recovery_date:
+        recovery_date_str = recovery_date.strftime("%d %B %Y")
+    else:
+        recovery_date_str = 'N/A'
+
     duration = duration_to_recovery(df)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -39,25 +45,40 @@ def real_drawdown_metrics(df):
     largest_drawdown, drawdown_start_date, drawdown_end_date, drawdown_duration = calculate_largest_drawdown(
         df)
     average_duration = average_drawdown_duration(df)
+
     drawdown_start_date_str = drawdown_start_date.strftime(
         "%Y-%m-%d") if drawdown_start_date else 'N/A'
     drawdown_end_date_str = drawdown_end_date.strftime(
         "%Y-%m-%d") if drawdown_end_date else 'N/A'
 
     col1, col2, col3, col4, col5 = st.columns(5)
+
     with col1:
-        st.metric('Largest Drawdown after reaching',
-                  f'${largest_drawdown:.2f}')
+        if largest_drawdown is not None:
+            st.metric('Largest Drawdown after reaching',
+                      f'${largest_drawdown:.2f}')
+        else:
+            st.metric('Largest Drawdown after reaching', 'N/A')
+
     with col2:
         st.metric('Date of the largest drawdown', drawdown_start_date_str)
+
     with col3:
-        st.metric('Recovered on: ', drawdown_end_date_str)
+        st.metric('Recovered on:', drawdown_end_date_str)
+
     with col4:
-        st.metric('No. of days to recover the largest drawdown',
-                  drawdown_duration)
+        if drawdown_duration is not None:
+            st.metric('No. of days to recover the largest drawdown',
+                      drawdown_duration)
+        else:
+            st.metric('No. of days to recover the largest drawdown', 'N/A')
+
     with col5:
-        st.metric('Average Duration for all Drawdowns',
-                  f'{average_duration} Days')
+        if average_duration is not None:
+            st.metric('Average Duration for all Drawdowns',
+                      f'{average_duration} Days')
+        else:
+            st.metric('Average Duration for all Drawdowns', 'N/A')
 
 
 def top_pnl_day_metrics(df):
