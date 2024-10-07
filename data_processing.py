@@ -245,12 +245,16 @@ def predict_and_plot_rolling_pnl(df, num_days_to_predict=30, degree=3):
     df['DateNumeric'] = pd.to_datetime(
         df['Close Date']).map(datetime.toordinal)
 
+    # Drop rows where 'Rolling PnL' is NaN
+    df = df.dropna(subset=['Rolling PnL'])
+
     X = df[['DateNumeric']]
     y = df['Rolling PnL']
 
     polyreg = make_pipeline(PolynomialFeatures(degree), LinearRegression())
     polyreg.fit(X, y)
 
+    # Continue with prediction and plotting
     start_date_for_prediction = pd.to_datetime(df['Close Date']).min()
     last_date = pd.to_datetime(df['Close Date']).max()
     end_date_for_prediction = last_date + timedelta(days=num_days_to_predict)
