@@ -10,9 +10,10 @@ st.set_page_config(page_title='Trading Performance Review', layout='wide')
 
 
 st.title('Trading Edge Auditor')
+st.write(
+    "Read the full blog article [here](https://sanchojralegre.com/markets/analyze-your-trading-performance-a-look-into-the-trading-edge-auditor).")
+
 st.write('Upload and analyze your trade data.')
-blog_url = "https://sanchojralegre.com/blog/article/77"
-st.write(f"Visit the blog article [here]({blog_url}).")
 file_upload = st.file_uploader("Upload your trade data", type=["html", "htm"])
 
 if file_upload:
